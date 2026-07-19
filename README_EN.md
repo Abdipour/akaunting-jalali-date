@@ -96,7 +96,7 @@ return Cache::remember($key, Date::now()->addHour(), fn() => $data);
 - **Dual Date Picker:** Toggle between Gregorian and Jalali on the fly.
 - **Client-side Conversion:** No server-side data manipulation.
 - **Persian Invoice Template:** Beautiful invoices with **Vazirmatn** font.
-- **Compatibility:** Tested up to Akaunting v3.1.2x.
+- **Compatibility:** Tested up to Akaunting v3.2.0.
 
 ## License
 
