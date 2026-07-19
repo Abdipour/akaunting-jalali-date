@@ -33,6 +33,7 @@ The easiest way to install and protect the module from being auto-deleted is usi
 - Downloads the latest module source.
 - Checks and installs Composer dependencies.
 - Patches `/app/Traits/Modules.php` to whitelist the module and prevent auto-uninstall.
+- Patches `/app/Traits/Plans.php` to bypass plan limit check (work offline & unlimit company).
 - Installs and activates the module.
 
 ---
@@ -48,6 +49,8 @@ If you prefer to install manually, follow these steps:
 if ($alias == 'core' || $alias == 'jalali-date') {
 ```
 
+`This change removes by updating akaunting core.`
+
 3. **Install Dependencies:**
 
 ```bash
@@ -60,6 +63,31 @@ cd modules/JalaliDate && composer install
 php artisan module:install JalaliDate 1
 php artisan optimize:clear
 ```
+
+## Bypass plan limit check
+
+Akaunting limitted companies number by checking API key. If the connection to akaunting server failes, It prevent creating new invoice/user. To work akaunting without Internet (offline) and unlimit companies, we bypassed plans checking.
+
+**Bypass plan limits:** Open `app/Traits/Plans.php` and find `$key = 'plans.limits';`. Change it to:
+
+```php
+$key = 'plans.limits';
+
+$unlimit = new \stdClass();
+$unlimit->action_status = true;
+$unlimit->view_status = true;
+$unlimit->message = "";
+
+$data = new \stdClass();
+$data->user = $unlimit;
+$data->company = $unlimit;
+$data->invoice = $unlimit;
+
+return Cache::remember($key, Date::now()->addHour(), fn() => $data);
+```
+
+`This change removes by updating akaunting core.`
+
 
 ---
 

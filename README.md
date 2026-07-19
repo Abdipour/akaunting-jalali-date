@@ -33,11 +33,12 @@
 - آخرین نسخه سورس کد ماژول را دانلود می‌کند.
 - وابستگی‌های Composer را بررسی و نصب می‌کند.
 - **فایل هسته `/app/Traits/Modules.php` را اصلاح می‌کند** تا از حذف خودکار ماژول جلوگیری شود.
+- **فایل هسته `/app/Traits/Plans.php` را اصلاح می‌کند** تا بررسی محدودیت‌های پلن را دور بزند (bypass).
 - ماژول را نصب و فعال‌سازی می‌کند.
 
 ---
 
-## 🛠 نصب دستی (برای کاربران حرفه‌ای)
+## نصب دستی (برای کاربران حرفه‌ای)
 
 اگر مایل به نصب دستی هستید:
 
@@ -47,6 +48,7 @@
 ```php
 if ($alias == 'core' || $alias == 'jalali-date') {
 ```
+`این تغییر پس از بروزرسانی هسته Akaunting حذف می‌شود.`
 
 3. **نصب وابستگی‌ها:**
 
@@ -60,6 +62,30 @@ cd modules/JalaliDate && composer install
 php artisan module:install JalaliDate 1
 php artisan optimize:clear
 ```
+
+## حذف بررسی محدودیت پلن
+
+سیستم akaunting با بررسی API Key در سرور خود، محدودیت ایجاد شرکت دوم را اعمال می‌کند. همچنین در مواقع قطعی اینترنت ایران، به دلیل عدم موفقیت ارتباط با سرور akaunting و خطای بررسی API Key، سیستم اجازه افزودن فاکتور یا کاربر را نمی‌دهد. برای حل این مشکل ما بررسی API Key برای محدودیت‌های پلن را Bypass کردیم.
+
+**اصلاح هسته:** فایل `app/Traits/Plans.php` را باز کرده و عبارت `$key = 'plans.limits';` را پیدا کنید. آن را به شکل زیر تغییر دهید:
+
+```php
+$key = 'plans.limits';
+
+$unlimit = new \stdClass();
+$unlimit->action_status = true;
+$unlimit->view_status = true;
+$unlimit->message = "";
+
+$data = new \stdClass();
+$data->user = $unlimit;
+$data->company = $unlimit;
+$data->invoice = $unlimit;
+
+return Cache::remember($key, Date::now()->addHour(), fn() => $data);
+```
+
+`این تغییر پس از بروزرسانی هسته Akaunting حذف می‌شود.`
 
 ---
 
