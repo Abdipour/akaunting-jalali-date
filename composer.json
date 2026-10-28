@@ -1,6 +1,7 @@
 {
   "require": {
-    "morilog/jalali": "^3.4"
+    "morilog/jalali": "^3.4",
+    "nesbot/carbon": "^2.73"
   },
   "replace": {
     "guzzlehttp/guzzle": "*",
